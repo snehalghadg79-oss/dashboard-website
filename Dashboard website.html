@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GlobalIncome — Global Income Inequality Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0B1929; --mid:#0F2D48; --teal:#0D9488; --cyan:#22D3EE;
+  --amber:#F59E0B; --rose:#F43F5E; --green:#10B981;
+  --slate:#64748B; --border:#E2E8F0; --bg:#F8FAFC; --white:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;}
+.page,.auth-page{display:none;}
+.page.active{display:flex;flex-direction:column;min-height:100vh;}
+.auth-page.active{display:flex;min-height:100vh;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+
+/* NAV */
+.nav{background:var(--ink);height:64px;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 1px 0 rgba(255,255,255,.06);}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.brand-mark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.brand-name{font-family:'Lora',serif;font-size:1.2rem;font-weight:700;color:#fff;}
+.brand-name em{color:var(--cyan);font-style:normal;}
+.nav-links{display:flex;gap:2px;}
+.nav-a{color:rgba(255,255,255,.5);font-size:.84rem;font-weight:500;padding:6px 12px;border-radius:6px;text-decoration:none;background:none;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:.18s;}
+.nav-a:hover{color:#fff;background:rgba(255,255,255,.07);}
+.nav-end{display:flex;gap:8px;align-items:center;}
+.btn-ghost{background:none;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.82);padding:7px 18px;border-radius:7px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:.18s;}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-fill{background:linear-gradient(135deg,var(--teal),var(--cyan));color:#fff;padding:8px 20px;border-radius:7px;font-size:.84rem;font-weight:700;border:none;cursor:pointer;font-family:'Outfit',sans-serif;box-shadow:0 4px 14px rgba(13,148,136,.3);transition:.18s;}
+.btn-fill:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(13,148,136,.42);}
+.nav-user{display:flex;align-items:center;gap:9px;}
+.nav-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;color:#fff;}
+.nav-nm{color:rgba(255,255,255,.8);font-size:.84rem;font-weight:600;}
+.btn-out{background:none;border:1.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:.76rem;font-family:'Outfit',sans-serif;transition:.18s;}
+.btn-out:hover{border-color:var(--rose);color:var(--rose);}
+
+/* HERO */
+.hero{background:var(--ink);padding:5.5rem 2.5rem 0;position:relative;overflow:hidden;flex:1;}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(34,211,238,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.025) 1px,transparent 1px);background-size:64px 64px;}
+.hero::after{content:'';position:absolute;top:-120px;right:-100px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(13,148,136,.1) 0%,transparent 65%);pointer-events:none;}
+.hero-in{max-width:1100px;margin:0 auto;position:relative;z-index:1;}
+.hero-content{max-width:700px;margin:0 auto;text-align:center;padding-bottom:4rem;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.18);color:var(--cyan);padding:6px 16px;border-radius:100px;font-size:.71rem;font-weight:700;letter-spacing:.9px;text-transform:uppercase;margin-bottom:1.6rem;}
+.ed{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{font-family:'Lora',serif;font-size:clamp(2.1rem,4.2vw,3.4rem);color:#fff;line-height:1.17;font-weight:700;margin-bottom:1.15rem;}
+.hero h1 .hl{color:var(--cyan);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.48);font-size:.97rem;line-height:1.8;margin-bottom:2.2rem;max-width:580px;margin-left:auto;margin-right:auto;}
+.hero-actions{display:flex;gap:.85rem;align-items:center;justify-content:center;flex-wrap:wrap;}
+.btn-cta{background:linear-gradient(135deg,var(--teal),var(--cyan));color:#fff;padding:13px 30px;border-radius:9px;font-size:.93rem;font-weight:700;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:.22s;box-shadow:0 6px 22px rgba(13,148,136,.38);}
+.btn-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(13,148,136,.48);}
+.dl-link{display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);color:var(--amber);padding:11px 20px;border-radius:8px;font-size:.83rem;font-weight:600;text-decoration:none;transition:.18s;cursor:pointer;}
+.dl-link:hover{background:rgba(245,158,11,.15);transform:translateY(-1px);}
+/* KPI strip — flush to bottom of hero */
+.hero-kpis{display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.07);margin-top:1rem;}
+.hkpi{padding:1.5rem 1.4rem;text-align:center;border-right:1px solid rgba(255,255,255,.06);transition:.18s;}
+.hkpi:last-child{border-right:none;}
+.hkpi:hover{background:rgba(255,255,255,.05);}
+.hkpi-label{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.7px;margin-bottom:.55rem;}
+.hkpi-val{font-family:'Lora',serif;font-size:2rem;font-weight:700;color:#fff;line-height:1;margin-bottom:.3rem;}
+.hkpi-unit{font-size:.64rem;color:var(--cyan);font-weight:600;letter-spacing:.2px;}
+
+/* ABOUT */
+.about-sec{background:var(--white);padding:5.5rem 2.5rem;}
+.sec-in{max-width:1100px;margin:0 auto;}
+.sec-tag{font-size:.68rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem;}
+.sec-h{font-family:'Lora',serif;font-size:clamp(1.6rem,2.5vw,2.2rem);color:var(--ink);font-weight:700;line-height:1.22;margin-bottom:.65rem;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4.5rem;align-items:start;}
+.about-text p{color:var(--slate);font-size:.9rem;line-height:1.82;margin-bottom:.9rem;}
+.about-mini{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:1rem;}
+.mini-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.3rem;}
+.mini-card .ico{font-size:1.4rem;margin-bottom:.55rem;}
+.mini-card h4{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:.28rem;}
+.mini-card p{font-size:.75rem;color:var(--slate);line-height:1.6;}
+.mini-card.t{border-top:3px solid var(--teal);}
+.mini-card.c{border-top:3px solid var(--cyan);}
+.mini-card.a{border-top:3px solid var(--amber);}
+.mini-card.r{border-top:3px solid var(--rose);}
+
+/* INSIGHTS SECTION */
+.insights-sec{background:var(--bg);padding:5rem 2.5rem;}
+.insights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2.5rem;}
+.insight-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.6rem;position:relative;overflow:hidden;transition:.2s;}
+.insight-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.insight-card.iq::before{background:linear-gradient(90deg,var(--teal),var(--cyan));}
+.insight-card.eq::before{background:linear-gradient(90deg,var(--cyan),#6EE7B7);}
+.insight-card.pq::before{background:linear-gradient(90deg,var(--amber),#FDE68A);}
+.insight-card.rq::before{background:linear-gradient(90deg,var(--rose),#FCA5A5);}
+.insight-card.gq::before{background:linear-gradient(90deg,var(--green),#86EFAC);}
+.insight-card.mq::before{background:linear-gradient(90deg,#7C3AED,#A78BFA);}
+.insight-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(11,25,41,.09);}
+.insight-num{font-family:'Lora',serif;font-size:2rem;font-weight:700;line-height:1;margin-bottom:.4rem;}
+.insight-label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--slate);margin-bottom:.6rem;}
+.insight-desc{font-size:.8rem;color:var(--slate);line-height:1.65;}
+
+/* DASHBOARD SECTION */
+.dash-preview-sec{background:var(--white);padding:5rem 2.5rem;}
+.dash-feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:2.5rem;}
+.dash-feat{display:flex;align-items:flex-start;gap:1rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.3rem 1.4rem;transition:.18s;}
+.dash-feat:hover{border-color:var(--teal);background:#fff;}
+.dash-feat-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
+.dash-feat-title{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.dash-feat-desc{font-size:.77rem;color:var(--slate);line-height:1.6;}
+
+/* DATASET STRIP */
+.ds-strip{background:linear-gradient(135deg,var(--ink),#0F3A5A);padding:2.5rem 2.5rem;}
+.ds-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+.ds-info h3{font-family:'Lora',serif;font-size:1.1rem;color:#fff;margin-bottom:5px;}
+.ds-info p{color:rgba(255,255,255,.4);font-size:.8rem;line-height:1.6;}
+.ds-meta{display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:.65rem;}
+.ds-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:4px 10px;border-radius:6px;font-size:.7rem;font-weight:600;}
+.btn-dl{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--amber),#D97706);color:#fff;padding:12px 24px;border-radius:9px;font-size:.88rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;transition:.2s;box-shadow:0 5px 16px rgba(245,158,11,.3);white-space:nowrap;cursor:pointer;border:none;}
+.btn-dl:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(245,158,11,.42);}
+
+/* CTA BAND */
+.cta-band{background:var(--ink);padding:5rem 2.5rem;text-align:center;position:relative;overflow:hidden;}
+.cta-band::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 100%,rgba(13,148,136,.14) 0%,transparent 65%);}
+.cta-band h2{font-family:'Lora',serif;font-size:clamp(1.6rem,2.8vw,2.3rem);color:#fff;margin-bottom:.8rem;position:relative;font-weight:700;}
+.cta-band p{color:rgba(255,255,255,.44);font-size:.92rem;margin-bottom:2.2rem;position:relative;max-width:480px;margin-left:auto;margin-right:auto;}
+.cta-row{display:flex;gap:.85rem;justify-content:center;flex-wrap:wrap;position:relative;}
+/* FOOTER */
+.footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.06);padding:1.75rem 2.5rem;}
+.foot-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.foot-copy{font-size:.76rem;color:rgba(255,255,255,.28);}
+.foot-links{display:flex;gap:1.5rem;}
+.foot-links a{font-size:.76rem;color:rgba(255,255,255,.32);text-decoration:none;transition:.18s;}
+.foot-links a:hover{color:var(--cyan);}
+
+/* AUTH */
+.auth-bg{position:absolute;inset:0;background:linear-gradient(135deg,var(--ink) 0%,#0A3050 60%,var(--teal) 100%);}
+.auth-bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(34,211,238,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.04) 1px,transparent 1px);background-size:48px 48px;}
+.auth-card{background:#fff;border-radius:20px;padding:2.75rem;width:100%;max-width:420px;position:relative;z-index:1;box-shadow:0 30px 80px rgba(0,0,0,.3);animation:aup .32s ease;}
+@keyframes aup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.back-btn{position:absolute;top:1.2rem;left:1.2rem;z-index:2;color:rgba(255,255,255,.54);font-size:.8rem;cursor:pointer;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);padding:6px 12px;border-radius:7px;font-family:'Outfit',sans-serif;transition:.18s;}
+.back-btn:hover{color:#fff;background:rgba(255,255,255,.14);}
+.auth-mark{width:50px;height:50px;border-radius:13px;background:linear-gradient(135deg,var(--teal),var(--cyan));display:inline-flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:.85rem;box-shadow:0 6px 18px rgba(13,148,136,.28);}
+.auth-card h2{font-family:'Lora',serif;font-size:1.38rem;color:var(--ink);font-weight:700;margin-bottom:3px;}
+.auth-sub{font-size:.8rem;color:var(--slate);margin-bottom:1.65rem;}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:.88rem;}
+.fld label{font-size:.77rem;font-weight:700;color:var(--ink);}
+.fld input{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.875rem;font-family:'Outfit',sans-serif;color:var(--ink);background:var(--bg);outline:none;transition:.18s;}
+.fld input:focus{border-color:var(--teal);background:#fff;}
+.fld input.err{border-color:var(--rose);}
+.ferr{color:var(--rose);font-size:.72rem;display:none;}
+.ferr.show{display:block;}
+.a-alert{padding:9px 12px;border-radius:8px;font-size:.8rem;margin-bottom:.7rem;display:none;}
+.a-alert.err{background:#FEF2F2;color:var(--rose);border:1px solid #FECACA;display:block;}
+.role-row{display:flex;gap:.55rem;margin-top:3px;}
+.role-opt{flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--slate);transition:.18s;}
+.role-opt.on{border-color:var(--teal);background:rgba(13,148,136,.07);color:var(--teal);}
+.btn-auth{background:linear-gradient(135deg,#0C4A6E,var(--teal));color:#fff;padding:12px;border-radius:9px;border:none;cursor:pointer;font-size:.9rem;font-weight:700;font-family:'Outfit',sans-serif;width:100%;margin-top:.35rem;transition:.18s;}
+.btn-auth:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(13,148,136,.28);}
+.auth-sw{text-align:center;font-size:.8rem;color:var(--slate);margin-top:.85rem;}
+.auth-sw a{color:var(--teal);font-weight:700;cursor:pointer;}
+.demo-creds{margin-top:.9rem;padding:.65rem .9rem;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;font-size:.71rem;color:#166534;line-height:1.75;}
+
+/* USER DASHBOARD */
+.dash-bg{background:var(--bg);}
+.dash-wrap{max-width:1100px;margin:0 auto;padding:2rem 2rem 3.5rem;}
+.welcome{background:linear-gradient(135deg,var(--ink) 0%,#0F3A5A 55%,var(--teal) 100%);border-radius:16px;padding:1.85rem 2.25rem;margin-bottom:1.6rem;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+.welcome::after{content:'🌍';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:4.5rem;opacity:.07;}
+.welcome h2{font-family:'Lora',serif;font-size:1.45rem;color:#fff;margin-bottom:.22rem;font-weight:700;}
+.welcome p{color:rgba(255,255,255,.46);font-size:.82rem;}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.9rem;margin-bottom:1.6rem;}
+.kpi{background:#fff;border-radius:11px;padding:1.15rem 1.3rem;border:1px solid var(--border);display:flex;align-items:center;gap:.9rem;}
+.kpi-ico{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
+.kpi-n{font-family:'Lora',serif;font-size:1.5rem;font-weight:700;color:var(--ink);line-height:1;}
+.kpi-l{font-size:.69rem;color:var(--slate);margin-top:2px;}
+.block{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.5rem;}
+.block-hd{display:flex;align-items:center;gap:12px;padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#F8FBFF,#EEF7F8);}
+.block-ico{width:38px;height:38px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 7px rgba(11,25,41,.08);flex-shrink:0;}
+.block-hd h3{font-size:.97rem;font-weight:700;color:var(--ink);margin-bottom:1px;}
+.block-hd p{font-size:.74rem;color:var(--slate);}
+.block-body{padding:1.5rem;}
+
+/* INDICATOR TABLE — clean & readable */
+.ind-table{width:100%;border-collapse:collapse;}
+.ind-table thead th{text-align:left;font-size:.66rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--slate);padding:8px 14px;border-bottom:2px solid var(--border);background:var(--bg);}
+.ind-table tbody tr{border-bottom:1px solid #F1F5F9;transition:.15s;}
+.ind-table tbody tr:last-child{border:none;}
+.ind-table tbody tr:hover{background:#F8FBFF;}
+.ind-table td{padding:10px 14px;vertical-align:middle;}
+.ind-ico-cell{display:flex;align-items:center;gap:9px;}
+.ind-ico-box{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.ind-name{font-size:.86rem;font-weight:700;color:var(--ink);}
+.ind-cat{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:1px;}
+.unit-pill{background:var(--ink);color:var(--cyan);padding:3px 9px;border-radius:5px;font-size:.68rem;font-weight:800;white-space:nowrap;}
+.ind-desc{font-size:.8rem;color:var(--slate);line-height:1.5;}
+.ind-desc strong{color:var(--ink);}
+.ind-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(13,148,136,.07);border:1px solid rgba(13,148,136,.16);color:var(--teal);padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:700;margin-top:4px;}
+/* INDICATOR CATEGORY HEADER */
+.ind-cat-row td{background:linear-gradient(90deg,rgba(13,148,136,.06),rgba(34,211,238,.03));padding:7px 14px 6px;border-bottom:1px solid rgba(13,148,136,.12) !important;}
+.ind-cat-label{font-size:.67rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+/* INDICATOR VALUE CHIPS */
+.val-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+.val-chip{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:.65rem;font-weight:700;color:var(--slate);}
+.val-chip.hi{background:rgba(244,63,94,.06);border-color:rgba(244,63,94,.18);color:#be123c;}
+.val-chip.lo{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.18);color:#065f46;}
+.val-chip.mid{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.18);color:#92400e;}
+.val-chip.neu{background:rgba(34,211,238,.06);border-color:rgba(34,211,238,.18);color:#0e7490;}
+
+/* GINI REFERENCE PANEL */
+.gini-panel{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.25rem;background:linear-gradient(135deg,var(--ink),#0F3A5A);border-radius:12px;padding:1.5rem 1.75rem;}
+.gini-lbl{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.6);margin-bottom:.25rem;}
+.scale-bar{height:11px;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--amber),var(--rose));position:relative;margin:1.8rem 0 .9rem;}
+.scale-pin{position:absolute;top:-22px;transform:translateX(-50%);font-size:.67rem;font-weight:800;color:var(--cyan);white-space:nowrap;}
+.scale-pin::after{content:'';display:block;width:1.5px;height:12px;background:var(--cyan);margin:3px auto 0;}
+.scale-ends{display:flex;justify-content:space-between;font-size:.67rem;color:rgba(255,255,255,.35);}
+.gini-range-list{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-top:.7rem;}
+.gini-range-list li{display:flex;align-items:center;gap:8px;font-size:.78rem;color:rgba(255,255,255,.68);}
+.gb{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ctry-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;align-content:start;}
+.ctry{border-radius:8px;padding:.58rem .85rem;}
+.ctry strong{display:block;font-size:.77rem;color:var(--ink);font-weight:700;}
+.ctry span{font-size:.66rem;color:var(--slate);}
+.ctry-low{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);}
+.ctry-mid{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);}
+.ctry-high{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);}
+
+/* POWER BI */
+.pbi{background:var(--ink);border-radius:12px;overflow:hidden;}
+.pbi-bar{display:flex;align-items:center;gap:7px;padding:9px 15px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05);}
+.pbi-dot{width:9px;height:9px;border-radius:50%;}
+.pbi-lbl{flex:1;text-align:center;color:rgba(255,255,255,.27);font-size:.72rem;}
+.pbi iframe{width:100%;height:590px;border:none;display:block;}
+
+/* FEEDBACK */
+.fb-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fb-f{display:flex;flex-direction:column;gap:4px;margin-bottom:.85rem;}
+.fb-f label{font-size:.76rem;font-weight:700;color:var(--ink);}
+.fb-f input,.fb-f select,.fb-f textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;font-family:'Outfit',sans-serif;color:var(--ink);background:var(--bg);outline:none;transition:.18s;resize:vertical;}
+.fb-f input:focus,.fb-f select:focus,.fb-f textarea:focus{border-color:var(--teal);background:#fff;}
+.stars{display:flex;gap:3px;flex-direction:row-reverse;justify-content:flex-end;}
+.stars input{display:none;}
+.stars label{font-size:1.35rem;cursor:pointer;color:#CBD5E1;transition:.14s;}
+.stars label:hover,.stars label:hover~label,.stars input:checked~label{color:var(--amber);}
+.btn-send{background:linear-gradient(135deg,#0C4A6E,var(--teal));color:#fff;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-size:.88rem;font-weight:700;font-family:'Outfit',sans-serif;transition:.18s;}
+.btn-send:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(13,148,136,.28);}
+.fb-ok{display:none;text-align:center;padding:2rem;}
+.fb-ok-ico{font-size:2.4rem;display:block;margin-bottom:.7rem;}
+.fb-ok h3{font-family:'Lora',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.4rem;}
+.fb-ok p{color:var(--slate);font-size:.82rem;}
+.sm-alert{padding:9px 12px;border-radius:8px;font-size:.8rem;margin-bottom:.75rem;display:none;}
+.sm-alert.err{background:#FEF2F2;color:var(--rose);border:1px solid #FECACA;display:block;}
+
+/* ADMIN */
+.admin-layout{display:flex;min-height:calc(100vh - 64px);}
+.sidebar{width:210px;background:var(--ink);flex-shrink:0;padding:1.1rem .7rem;border-right:1px solid rgba(255,255,255,.05);}
+.sb-sec{font-size:.62rem;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 .6rem;margin:1rem 0 .3rem;}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;background:none;border:none;color:rgba(255,255,255,.44);font-size:.82rem;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;width:100%;text-align:left;transition:.18s;margin-bottom:1px;}
+.sb-btn:hover{background:rgba(255,255,255,.06);color:#fff;}
+.sb-btn.on{background:rgba(34,211,238,.12);color:var(--cyan);font-weight:700;}
+.adm-main{flex:1;overflow-y:auto;background:var(--bg);}
+.panel{display:none;padding:1.75rem;max-width:1040px;}
+.panel.on{display:block;}
+.ph{margin-bottom:1.6rem;}
+.ph h2{font-family:'Lora',serif;font-size:1.42rem;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.ph p{font-size:.8rem;color:var(--slate);}
+.a-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.6rem;}
+.a-kpi{background:#fff;border-radius:11px;padding:1.1rem 1.2rem;border:1px solid var(--border);display:flex;align-items:center;gap:.85rem;}
+.akico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.akn{font-family:'Lora',serif;font-size:1.5rem;font-weight:700;color:var(--ink);line-height:1;}
+.akl{font-size:.69rem;color:var(--slate);}
+.akc{font-size:.67rem;color:var(--green);font-weight:700;}
+.acard{background:#fff;border-radius:11px;border:1px solid var(--border);margin-bottom:1.1rem;overflow:hidden;}
+.acard-hd{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);}
+.acard-hd h3{font-size:.88rem;font-weight:700;color:var(--ink);}
+.bdg{display:inline-block;padding:2px 8px;border-radius:100px;font-size:.67rem;font-weight:700;}
+.bg{background:rgba(16,185,129,.1);color:var(--green);}
+.bt{background:rgba(13,148,136,.1);color:var(--teal);}
+.br{background:rgba(244,63,94,.1);color:var(--rose);}
+.bo{background:rgba(245,158,11,.1);color:var(--amber);}
+.blive{background:rgba(16,185,129,.12);color:var(--green);}
+.bar-c{display:flex;align-items:flex-end;gap:6px;height:68px;padding:.4rem;}
+.bar{flex:1;background:linear-gradient(180deg,var(--cyan),var(--teal));border-radius:3px 3px 0 0;}
+.bar-ls{display:flex;gap:6px;padding:2px .4rem 0;}
+.bar-l{flex:1;text-align:center;font-size:.6rem;color:var(--slate);}
+table{width:100%;border-collapse:collapse;}
+thead th{text-align:left;font-size:.67rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--slate);padding:8px 13px;border-bottom:1px solid var(--border);background:var(--bg);}
+tbody td{padding:9px 13px;font-size:.83rem;border-bottom:1px solid #F1F5F9;}
+tbody tr:last-child td{border:none;}
+tbody tr:hover{background:var(--bg);}
+.ucell{display:flex;align-items:center;gap:7px;}
+.avsm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:#fff;flex-shrink:0;}
+.act-feed{display:flex;flex-direction:column;gap:.55rem;}
+.act{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;background:var(--bg);}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.act-tx{font-size:.78rem;flex:1;}.act-tx strong{color:var(--ink);}
+.act-tm{font-size:.67rem;color:var(--slate);}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+.scard{background:#fff;border-radius:11px;padding:1.4rem;border:1px solid var(--border);}
+.scard h4{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:.9rem;}
+.sf{margin-bottom:.78rem;}
+.sf label{display:block;font-size:.73rem;font-weight:700;color:var(--slate);margin-bottom:4px;}
+.sf input,.sf select{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:.83rem;font-family:'Outfit',sans-serif;color:var(--ink);background:var(--bg);outline:none;}
+.btn-save{background:linear-gradient(135deg,#0C4A6E,var(--teal));color:#fff;padding:9px 20px;border-radius:7px;border:none;cursor:pointer;font-size:.82rem;font-weight:700;font-family:'Outfit',sans-serif;transition:.18s;}
+.btn-save:hover{transform:translateY(-1px);}
+.ro-note{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:8px 13px;font-size:.77rem;color:#92680A;display:flex;align-items:center;gap:7px;margin-bottom:1.2rem;}
+
+.ind-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;}
+.ind-card{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:1.15rem 1.25rem;transition:.18s;}
+.ind-card:hover{border-color:var(--teal);background:#fff;box-shadow:0 4px 14px rgba(13,148,136,.07);}
+.ind-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;}
+.ind-card-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.ind-card-unit{font-size:.62rem;font-weight:800;color:var(--teal);background:rgba(13,148,136,.08);border:1px solid rgba(13,148,136,.15);padding:2px 8px;border-radius:4px;}
+.ind-card-name{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:.35rem;}
+.ind-card-desc{font-size:.76rem;color:var(--slate);line-height:1.58;}
+@media(max-width:860px){.ind-cards{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.ind-cards{grid-template-columns:1fr;}}
+.charts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+.chart-chip{display:flex;align-items:flex-start;gap:.75rem;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:.85rem 1rem;}
+.chart-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.chart-name{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.chart-note{font-size:.72rem;color:var(--slate);line-height:1.5;}
+@media(max-width:860px){.charts-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:540px){.charts-grid{grid-template-columns:1fr;}}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:#fff;padding:10px 16px;border-radius:9px;font-size:.82rem;box-shadow:0 8px 22px rgba(0,0,0,.22);z-index:9999;display:none;align-items:center;gap:8px;border-left:3px solid var(--cyan);max-width:280px;animation:tin .26s ease;}
+.toast.show{display:flex;}
+@keyframes tin{from{transform:translateX(80px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+  .kpis{grid-template-columns:repeat(3,1fr);}
+  .hero-kpis{grid-template-columns:repeat(3,1fr);}
+  .insights-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:860px){
+  .about-grid,.sgrid{grid-template-columns:1fr;}
+  .hero-kpis{grid-template-columns:repeat(3,1fr);}
+  .kpis{grid-template-columns:repeat(3,1fr);}
+  .a-kpis{grid-template-columns:1fr 1fr;}
+  .dash-feat-grid{grid-template-columns:1fr;}
+  .nav-links{display:none;}
+  .sidebar{display:none;}
+  .hero,.about-sec,.insights-sec,.dash-preview-sec,.ds-strip,.cta-band,.footer{padding-left:1.25rem;padding-right:1.25rem;}
+}
+@media(max-width:540px){
+  .kpis,.a-kpis{grid-template-columns:1fr 1fr;}
+  .hero-kpis{grid-template-columns:repeat(2,1fr);}
+  .insights-grid{grid-template-columns:1fr;}
+  .gini-panel,.fb-2,.about-mini{grid-template-columns:1fr;}
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HOME
+═══════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <header class="nav">
+    <a class="brand" href="#">
+      <div class="brand-mark">🌍</div>
+      <div class="brand-name">Global<em>Income</em></div>
+    </a>
+    <nav class="nav-links">
+      <a class="nav-a" href="#about">About</a>
+      <a class="nav-a" href="#dataset">Dataset</a>
+    </nav>
+    <div class="nav-end">
+      <button class="btn-fill" onclick="showAuth('login')">Sign In →</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-in">
+      <div class="hero-content">
+        <div class="hero-eyebrow"><span class="ed"></span>Global Income Inequality Analytics · 1990–2024</div>
+        <h1>Explore Global <span class="hl">Income Inequality</span> Through Data</h1>
+        <p class="hero-sub">Track how wealth is distributed across 76 countries over 34 years — powered by a live Power BI dashboard covering Gini Index, GDP, poverty rates, and 10 more indicators.</p>
+        <div class="hero-actions">
+          <button class="btn-cta" onclick="showAuth('login')">Explore the Dashboard →</button>
+          <button class="dl-link" onclick="showAuth('login')">⬇️ Download Dataset</button>
+        </div>
+      </div>
+      <div class="hero-kpis">
+        <div class="hkpi">
+          <div class="hkpi-label">Total GDP</div>
+          <div class="hkpi-val">$874T</div>
+          <div class="hkpi-unit">USD</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi-label">Total GDP per Capita</div>
+          <div class="hkpi-val">$33M</div>
+          <div class="hkpi-unit">USD</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi-label">Population</div>
+          <div class="hkpi-val">159bn</div>
+          <div class="hkpi-unit">Total covered</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi-label">Average Gini Index</div>
+          <div class="hkpi-val">37.75</div>
+          <div class="hkpi-unit">Score 0–100</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi-label">Total Countries</div>
+          <div class="hkpi-val">76</div>
+          <div class="hkpi-unit">Across 5 regions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-sec" id="about">
+    <div class="sec-in">
+      <div class="about-grid">
+        <div class="about-text">
+          <div class="sec-tag">About the Platform</div>
+          <h2 class="sec-h">Understanding Income Inequality at a Global Scale</h2>
+          <p>GlobalIncome answers one central question: <strong>how is wealth distributed across countries — and has it gotten better or worse over time?</strong></p>
+          <p>Using a curated dataset of 76 countries spanning 34 years (1990–2024), the platform visualizes inequality through 13 key economic indicators — Gini Index, income share ratios, poverty rates, GDP, unemployment, and more — all in one interactive Power BI dashboard.</p>
+          <p>Built for <strong>economists, researchers, policymakers, and students</strong> who need clear, honest data on who earns what and why it matters.</p>
+        </div>
+        <div>
+          <div class="about-mini">
+            <div class="mini-card t"><div class="ico">📊</div><h4>Interactive Dashboard</h4><p>Filter live by country, year, region, and GDP growth category across all 13 indicators.</p></div>
+            <div class="mini-card c"><div class="ico">⚖️</div><h4>Gini Index Tracking</h4><p>The world's primary inequality measure tracked across 76 countries over 34 years.</p></div>
+            <div class="mini-card a"><div class="ico">🌍</div><h4>Regional Comparisons</h4><p>Compare Africa, Asia, Europe, Latin America, and more side by side.</p></div>
+            <div class="mini-card r"><div class="ico">🔒</div><h4>Sign In Required</h4><p>Create a free account to access the dashboard and download the full dataset.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <!-- DATASET STRIP -->
+  <div class="ds-strip" id="dataset">
+    <div class="ds-inner">
+      <div class="ds-info">
+        <h3>📂 GlobalIncome Research Dataset</h3>
+        <p>A curated, analysis-ready dataset covering income inequality and economic development across 76 countries.</p>
+        <div class="ds-meta">
+          <span class="ds-tag">📅 1990–2024</span>
+          <span class="ds-tag">🌍 76 Countries</span>
+          <span class="ds-tag">📋 13 Indicators</span>
+          <span class="ds-tag">🗂️ 2,695 Records</span>
+          <span class="ds-tag">📊 XLSX Format</span>
+          <span class="ds-tag">🔒 Sign in to download</span>
+        </div>
+      </div>
+      <button class="btn-dl" onclick="showAuth('login')">⬇️ Download Dataset (XLSX)</button>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <section class="cta-band">
+    <h2>Ready to Explore the Data?</h2>
+    <p>Sign in for free to access the full interactive Power BI dashboard and download the complete dataset.</p>
+    <div class="cta-row">
+      <button class="btn-cta" onclick="showAuth('login')">Sign In to Explore →</button>
+      <button class="btn-ghost" onclick="showAuth('signup')">Create Free Account</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="foot-in">
+      <div class="brand"><div class="brand-mark">🌍</div><div class="brand-name">Global<em>Income</em></div></div>
+      <span class="foot-copy">© 2024 GlobalIncome Analytics · 76 Countries · 2,695 Records · 1990–2024</span>
+      <div class="foot-links"><a href="#about">About</a><a href="#dataset">Dataset</a></div>
+    </div>
+  </footer>
+
+</div>
+<!-- ═══════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════ -->
+<div id="page-login" class="auth-page">
+  <div class="auth-bg"></div>
+  <button class="back-btn" onclick="showPage('home')">← Back</button>
+  <div class="auth-card">
+    <div class="auth-mark">🌍</div>
+    <h2>Welcome Back</h2>
+    <p class="auth-sub">Sign in to your GlobalIncome account</p>
+    <div id="login-alert" class="a-alert"></div>
+    <div class="fld"><label>Email</label><input type="email" id="l-email" placeholder="you@example.com"/><span class="ferr" id="l-ee">Enter a valid email</span></div>
+    <div class="fld"><label>Password</label><input type="password" id="l-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/><span class="ferr" id="l-pe">Enter your password</span></div>
+    <button class="btn-auth" onclick="doLogin()">Sign In →</button>
+    <div class="auth-sw">No account? <a onclick="showAuth('signup')">Create one free</a></div>
+    <div class="demo-creds"><strong>Demo accounts:</strong><br/>admin@globalincome.com / admin123<br/>user@globalincome.com / user123<br/>viewer@globalincome.com / viewer123</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SIGNUP
+═══════════════════════════════════════ -->
+<div id="page-signup" class="auth-page">
+  <div class="auth-bg"></div>
+  <button class="back-btn" onclick="showPage('home')">← Back</button>
+  <div class="auth-card">
+    <div class="auth-mark">🌍</div>
+    <h2>Create Account</h2>
+    <p class="auth-sub">Join GlobalIncome — free forever</p>
+    <div id="signup-alert" class="a-alert"></div>
+    <div class="fld"><label>Full Name</label><input type="text" id="s-name" placeholder="Your full name"/><span class="ferr" id="s-ne">Enter your name</span></div>
+    <div class="fld"><label>Email</label><input type="email" id="s-email" placeholder="you@example.com"/><span class="ferr" id="s-ee">Enter a valid email</span></div>
+    <div class="fld"><label>Password</label><input type="password" id="s-pass" placeholder="Minimum 6 characters"/><span class="ferr" id="s-pe">Minimum 6 characters</span></div>
+    <div class="fld"><label>Account Type</label>
+      <div class="role-row">
+        <div class="role-opt on" id="role-user" onclick="setRole('user')">👤 User</div>
+        <div class="role-opt" id="role-viewer" onclick="setRole('viewer')">👁 Viewer</div>
+        <div class="role-opt" id="role-admin" onclick="setRole('admin')">🛡 Admin</div>
+      </div>
+    </div>
+    <button class="btn-auth" onclick="doSignup()">Create Account →</button>
+    <div class="auth-sw">Have an account? <a onclick="showAuth('login')">Sign in</a></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     USER DASHBOARD
+═══════════════════════════════════════ -->
+<div id="page-user" class="page dash-bg">
+
+  <header class="nav">
+    <a class="brand" href="#"><div class="brand-mark">🌍</div><div class="brand-name">Global<em>Income</em></div></a>
+    <div class="nav-user">
+      <div class="nav-av" id="u-av">U</div>
+      <span class="nav-nm" id="u-nm">User</span>
+      <button class="btn-out" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="dash-wrap">
+
+    <div class="welcome">
+      <div>
+        <h2>Welcome back, <span id="u-name">User</span> 👋</h2>
+        <p>Global income inequality analytics — 76 countries · 1990–2024 · 13 indicators across 5 categories</p>
+      </div>
+      <a class="btn-dl" href="GlobalIncome_Dataset.xlsx" download style="font-size:.79rem;padding:9px 16px;flex-shrink:0;z-index:1">⬇️ Dataset</a>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-ico" style="background:rgba(13,148,136,.1)">🏦</div><div><div class="kpi-n">$874T</div><div class="kpi-l">Total GDP · USD</div></div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:rgba(34,211,238,.1)">💵</div><div><div class="kpi-n">$33M</div><div class="kpi-l">Total GDP per Capita · USD</div></div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:rgba(100,116,139,.1)">👥</div><div><div class="kpi-n">159bn</div><div class="kpi-l">Total Population</div></div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:rgba(16,185,129,.1)">⚖️</div><div><div class="kpi-n">37.75</div><div class="kpi-l">Average Gini Index</div></div></div>
+      <div class="kpi"><div class="kpi-ico" style="background:rgba(245,158,11,.1)">🌍</div><div><div class="kpi-n">76</div><div class="kpi-l">Total Countries</div></div></div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div class="block">
+      <div class="block-hd">
+        <div class="block-ico">📋</div>
+        <div><h3>Dashboard Indicators</h3><p>Key metrics used across the analysis</p></div>
+      </div>
+      <div class="block-body">
+        <div class="ind-cards">
+          <div class="ind-card"><div class="ind-card-top"><span class="ind-card-ico" style="background:rgba(13,148,136,.1)">⚖️</span><span class="ind-card-unit">Score 0–100</span></div><div class="ind-card-name">Gini Index</div><div class="ind-card-desc">Measures income inequality — 0 is perfect equality, 100 means one person holds all income.</div></div>
+          <div class="ind-card"><div class="ind-card-top"><span class="ind-card-ico" style="background:rgba(244,63,94,.1)">📊</span><span class="ind-card-unit">% of income</span></div><div class="ind-card-name">Income Share (Top &amp; Bottom 10%)</div><div class="ind-card-desc">Share of national income held by the richest vs poorest 10% of the population.</div></div>
+          <div class="ind-card"><div class="ind-card-top"><span class="ind-card-ico" style="background:rgba(34,211,238,.1)">💵</span><span class="ind-card-unit">USD / person</span></div><div class="ind-card-name">GDP per Capita</div><div class="ind-card-desc">Total economic output divided by population — measures average income per person.</div></div>
+          <div class="ind-card"><div class="ind-card-top"><span class="ind-card-ico" style="background:rgba(16,185,129,.1)">📈</span><span class="ind-card-unit">% annual</span></div><div class="ind-card-name">GDP Growth Rate</div><div class="ind-card-desc">Year-on-year change in GDP. Negative values indicate economic contraction or recession.</div></div>
+          <div class="ind-card"><div class="ind-card-top"><span class="ind-card-ico" style="background:rgba(245,158,11,.1)">🏚️</span><span class="ind-card-unit">% of population</span></div><div class="ind-card-name">Poverty Rate</div><div class="ind-card-desc">Share of people living below $2.15/day. High inequality countries stay poor even as GDP rises.</div></div>
+          <div class="ind-card"><div class="ind-card-top"><span class="ind-card-ico" style="background:rgba(16,185,129,.1)">👷</span><span class="ind-card-unit">% of labour force</span></div><div class="ind-card-name">Unemployment Rate</div><div class="ind-card-desc">Share of the workforce jobless but actively seeking employment.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE DASHBOARD -->
+    <div class="block">
+      <div class="block-hd">
+        <div class="block-ico">📊</div>
+        <div>
+          <h3>Interactive Analytics Dashboard for Global Income Distribution</h3>
+          <p>Use filters: Year (1990–2024) · Region · GDP Growth Category · Country</p>
+        </div>
+      </div>
+      <div class="block-body" style="padding:.9rem">
+        <div class="pbi">
+          <div class="pbi-bar">
+            <div class="pbi-dot" style="background:#FF6B6B"></div>
+            <div class="pbi-dot" style="background:#FFE66D"></div>
+            <div class="pbi-dot" style="background:#4ECDC4"></div>
+            <span class="pbi-lbl">GlobalIncome · Interactive Analytics · 76 Countries · 1990–2024</span>
+          </div>
+          <div class="pbi">
+            <iframe id="u-pbi" src="https://app.powerbi.com/reportEmbed?reportId=514f4e20-4682-4906-97e7-921585bd5b7b&autoAuth=true&ctid=d122c069-d062-4c6a-9405-88dbb5295702" allowfullscreen title="GlobalIncome Dashboard"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="block">
+      <div class="block-hd"><div class="block-ico">💬</div><div><h3>Share Your Feedback</h3><p>Help us improve the platform</p></div></div>
+      <div class="block-body">
+        <div id="fb-form">
+          <div class="fb-2">
+            <div class="fb-f"><label>Name</label><input type="text" id="fb-name" placeholder="Your name"/></div>
+            <div class="fb-f"><label>Email</label><input type="email" id="fb-email" placeholder="you@example.com"/></div>
+          </div>
+          <div class="fb-2">
+            <div class="fb-f"><label>Category</label>
+              <select id="fb-cat">
+                <option value="">Select category</option>
+                <option>Dashboard</option><option>Data Quality</option>
+                <option>Indicators</option><option>Feature Request</option>
+                <option>Bug Report</option><option>General</option>
+              </select>
+            </div>
+            <div class="fb-f"><label>Rating</label>
+              <div class="stars">
+                <input type="radio" id="s5" name="sr" value="5"/><label for="s5">★</label>
+                <input type="radio" id="s4" name="sr" value="4"/><label for="s4">★</label>
+                <input type="radio" id="s3" name="sr" value="3"/><label for="s3">★</label>
+                <input type="radio" id="s2" name="sr" value="2"/><label for="s2">★</label>
+                <input type="radio" id="s1" name="sr" value="1"/><label for="s1">★</label>
+              </div>
+            </div>
+          </div>
+          <div class="fb-f"><label>Message</label><textarea id="fb-msg" rows="3" placeholder="Share your thoughts on the dashboard or data..."></textarea></div>
+          <div id="fb-alert" class="sm-alert"></div>
+          <button class="btn-send" onclick="sendFb()">✉️ Send Feedback</button>
+        </div>
+        <div class="fb-ok" id="fb-ok">
+          <span class="fb-ok-ico">🎉</span>
+          <h3>Thank you!</h3>
+          <p>Your feedback has been received.</p>
+          <button class="btn-send" style="display:block;margin:1rem auto 0" onclick="resetFb()">Submit Another</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer" style="margin-top:auto">
+    <div class="foot-in">
+      <div class="brand"><div class="brand-mark">🌍</div><div class="brand-name">Global<em>Income</em></div></div>
+      <span class="foot-copy">GlobalIncome Analytics · 76 Countries · 1990–2024</span>
+    </div>
+  </footer>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ADMIN
+═══════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <header class="nav">
+    <a class="brand" href="#"><div class="brand-mark">🌍</div><div class="brand-name">Global<em>Income</em></div><span style="background:rgba(34,211,238,.15);color:var(--cyan);padding:2px 8px;border-radius:5px;font-size:.62rem;font-weight:800;margin-left:6px">ADMIN</span></a>
+    <div class="nav-user"><div class="nav-av" id="adm-av">A</div><span class="nav-nm" id="adm-nm">Admin</span><button class="btn-out" onclick="doLogout()">Logout</button></div>
+  </header>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sb-sec">Main</div>
+      <button class="sb-btn on" onclick="swP('overview',this)"><span>📊</span>Overview</button>
+      <button class="sb-btn" onclick="swP('visitors',this)"><span>👥</span>Visitors</button>
+      <button class="sb-btn" onclick="swP('users',this)"><span>👤</span>Users</button>
+      <button class="sb-btn" onclick="swP('analytics',this)"><span>📈</span>Analytics</button>
+      <button class="sb-btn" onclick="swP('feedback',this)"><span>💬</span>Feedback</button>
+      <div class="sb-sec" style="margin-top:1.1rem">Config</div>
+      <button class="sb-btn" onclick="swP('settings',this)"><span>⚙️</span>Settings</button>
+      <button class="sb-btn" onclick="swP('embed',this)"><span>🔗</span>Embed</button>
+    </aside>
+    <div class="adm-main">
+
+      <div id="panel-overview" class="panel on">
+        <div class="ph"><h2>Overview</h2><p>Real-time platform statistics</p></div>
+        <div class="a-kpis">
+          <div class="a-kpi"><div class="akico" style="background:rgba(13,148,136,.1)">👥</div><div><div class="akn" id="kpi-vis">0</div><div class="akl">Visitors</div><div class="akc" id="kpi-vc">↑ —</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(16,185,129,.1)">✅</div><div><div class="akn" id="kpi-usr">0</div><div class="akl">Users</div><div class="akc">↑ Growing</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(245,158,11,.1)">📅</div><div><div class="akn" id="kpi-today">0</div><div class="akl">Today</div><div class="akc">↑ Active</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(244,63,94,.1)">⏱️</div><div><div class="akn">2m 34s</div><div class="akl">Avg Session</div></div></div>
+        </div>
+        <div class="acard">
+          <div class="acard-hd"><h3>Weekly Trend</h3><span class="bdg blive">● Live</span></div>
+          <div style="padding:1.1rem">
+            <div class="bar-c"><div class="bar" style="height:40%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:52%"></div><div class="bar" style="height:84%"></div><div class="bar" style="height:60%"></div><div class="bar" style="height:93%"></div><div class="bar" style="height:74%"></div></div>
+            <div class="bar-ls"><div class="bar-l">Mon</div><div class="bar-l">Tue</div><div class="bar-l">Wed</div><div class="bar-l">Thu</div><div class="bar-l">Fri</div><div class="bar-l">Sat</div><div class="bar-l">Sun</div></div>
+          </div>
+        </div>
+        <div class="acard"><div class="acard-hd"><h3>Recent Activity</h3><span class="bdg blive">● Live</span></div><div style="padding:.9rem"><div class="act-feed" id="act-feed"></div></div></div>
+      </div>
+
+      <div id="panel-visitors" class="panel">
+        <div class="ph"><h2>Visitors</h2><p>All platform visits with timestamps</p></div>
+        <div class="acard"><div class="acard-hd"><h3>Visitor Log</h3><span class="bdg bt" id="vis-badge">0 Total</span></div><div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Time</th><th>Status</th></tr></thead><tbody id="vis-tbody"></tbody></table></div></div>
+      </div>
+
+      <div id="panel-users" class="panel">
+        <div class="ph"><h2>Users</h2><p>All registered accounts</p></div>
+        <div class="acard"><div class="acard-hd"><h3>All Users</h3><span class="bdg bt" id="usr-badge">0 Users</span></div><div style="overflow-x:auto"><table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Last Login</th><th>Status</th></tr></thead><tbody id="usr-tbody"></tbody></table></div></div>
+      </div>
+
+      <div id="panel-analytics" class="panel">
+        <div class="ph"><h2>Analytics</h2><p>Page views and engagement</p></div>
+        <div class="a-kpis">
+          <div class="a-kpi"><div class="akico" style="background:rgba(13,148,136,.1)">🏠</div><div><div class="akn" id="s-home">—</div><div class="akl">Home</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(16,185,129,.1)">📊</div><div><div class="akn" id="s-dash">—</div><div class="akl">Dashboard</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(245,158,11,.1)">🔑</div><div><div class="akn" id="s-login">—</div><div class="akl">Login</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(244,63,94,.1)">📝</div><div><div class="akn" id="s-signup">—</div><div class="akl">Sign Up</div></div></div>
+        </div>
+      </div>
+
+      <div id="panel-feedback" class="panel">
+        <div class="ph"><h2>Feedback</h2><p>User submitted feedback</p></div>
+        <div class="a-kpis" style="grid-template-columns:repeat(3,1fr)">
+          <div class="a-kpi"><div class="akico" style="background:rgba(13,148,136,.1)">💬</div><div><div class="akn" id="fb-count">0</div><div class="akl">Submissions</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(245,158,11,.1)">⭐</div><div><div class="akn" id="fb-avg">—</div><div class="akl">Avg Rating</div></div></div>
+          <div class="a-kpi"><div class="akico" style="background:rgba(16,185,129,.1)">🏆</div><div><div class="akn" id="fb-top" style="font-size:.9rem">—</div><div class="akl">Top Category</div></div></div>
+        </div>
+        <div class="acard"><div class="acard-hd"><h3>All Feedback</h3><span class="bdg bt" id="fb-badge">0 Entries</span></div><div style="overflow-x:auto"><table><thead><tr><th>#</th><th>User</th><th>Category</th><th>Rating</th><th>Message</th><th>Time</th></tr></thead><tbody id="fb-tbody"></tbody></table></div></div>
+      </div>
+
+      <div id="panel-settings" class="panel">
+        <div class="ph"><h2>Settings</h2><p>Platform configuration</p></div>
+        <div class="sgrid">
+          <div class="scard"><h4>Platform Info</h4><div class="sf"><label>Name</label><input type="text" value="GlobalIncome Analytics"/></div><div class="sf"><label>Admin Email</label><input type="email" value="admin@globalincome.com"/></div><div class="sf"><label>Timezone</label><select><option>UTC +05:30 (IST)</option><option>UTC +00:00 (GMT)</option><option>UTC −05:00 (EST)</option></select></div><button class="btn-save">Save</button></div>
+          <div class="scard"><h4>Access Control</h4><div class="sf"><label>Default Role</label><select><option>User</option><option>Viewer</option></select></div><div class="sf"><label>Session Timeout (min)</label><input type="number" value="60"/></div><button class="btn-save">Save</button></div>
+        </div>
+      </div>
+
+      <div id="panel-embed" class="panel">
+        <div class="ph"><h2>Dashboard Embed</h2><p>Configure the Power BI embed URL</p></div>
+        <div class="scard" style="max-width:540px"><h4>Embed Settings</h4><div class="sf"><label>Power BI URL</label><input type="text" id="embed-url" placeholder="https://app.powerbi.com/reportEmbed?reportId=..."/></div><div class="sf"><label>Height (px)</label><input type="number" value="590"/></div><button class="btn-save" onclick="saveEmbed()">Save & Apply</button></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     VIEWER
+═══════════════════════════════════════ -->
+<div id="page-viewer" class="page dash-bg">
+  <header class="nav">
+    <a class="brand" href="#"><div class="brand-mark">🌍</div><div class="brand-name">Global<em>Income</em></div><span style="background:rgba(245,158,11,.15);color:var(--amber);padding:2px 8px;border-radius:5px;font-size:.62rem;font-weight:800;margin-left:6px">VIEWER</span></a>
+    <div class="nav-user"><div class="nav-av" style="background:linear-gradient(135deg,var(--amber),#D97706)" id="vw-av">V</div><span class="nav-nm" id="vw-nm">Viewer</span><button class="btn-out" onclick="doLogout()">Logout</button></div>
+  </header>
+  <div style="padding:1.75rem 2rem;max-width:1040px;margin:0 auto">
+    <div class="ro-note">👁 <strong>Viewer Mode</strong> — Read-only access to visitor data.</div>
+    <div class="ph"><h2>Visitor Overview</h2><p>Read-only view of platform visitors</p></div>
+    <div class="a-kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.25rem">
+      <div class="a-kpi"><div class="akico" style="background:rgba(13,148,136,.1)">👥</div><div><div class="akn" id="vw-total">0</div><div class="akl">Total Visitors</div></div></div>
+      <div class="a-kpi"><div class="akico" style="background:rgba(245,158,11,.1)">📅</div><div><div class="akn" id="vw-today">0</div><div class="akl">Today</div></div></div>
+      <div class="a-kpi"><div class="akico" style="background:rgba(16,185,129,.1)">✅</div><div><div class="akn" id="vw-users">0</div><div class="akl">Users</div></div></div>
+    </div>
+    <div class="acard"><div class="acard-hd"><h3>Visitors</h3><span class="bdg bt" id="vw-badge">0 Total</span></div><div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Time</th><th>Status</th></tr></thead><tbody id="vw-tbody"></tbody></table></div></div>
+  </div>
+  <footer class="footer" style="margin-top:auto"><div class="foot-in"><div class="brand"><div class="brand-mark">🌍</div><div class="brand-name">Global<em>Income</em></div></div><span class="foot-copy">GlobalIncome Analytics · Viewer Access</span></div></footer>
+</div>
+
+
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+
+<script>
+const DB={
+  init(){
+    if(localStorage.gi_v2!=='1'){localStorage.removeItem('gi_u');localStorage.gi_v2='1';}
+    if(!localStorage.gi_u)localStorage.gi_u=JSON.stringify([
+      {id:1,name:'Admin User',email:'admin@globalincome.com',password:'admin123',role:'admin',joined:'2024-01-01',lastLogin:new Date().toISOString()},
+      {id:2,name:'Snehal',email:'user@globalincome.com',password:'user123',role:'user',joined:'2024-02-15',lastLogin:new Date().toISOString()},
+      {id:3,name:'Visitor Viewer',email:'viewer@globalincome.com',password:'viewer123',role:'viewer',joined:'2024-03-01',lastLogin:new Date().toISOString()}
+    ]);
+    if(!localStorage.gi_v)localStorage.gi_v=JSON.stringify([]);
+    if(!localStorage.gi_s)localStorage.gi_s=JSON.stringify({home:0,user:0,login:0,signup:0});
+    if(!localStorage.gi_e)localStorage.gi_e='https://app.powerbi.com/reportEmbed?reportId=514f4e20-4682-4906-97e7-921585bd5b7b&autoAuth=true&ctid=d122c069-d062-4c6a-9405-88dbb5295702';
+    if(!localStorage.gi_f)localStorage.gi_f=JSON.stringify([]);
+  },
+  users(){return JSON.parse(localStorage.gi_u||'[]');},
+  vis(){return JSON.parse(localStorage.gi_v||'[]');},
+  stats(){return JSON.parse(localStorage.gi_s||'{}');},
+  fbs(){return JSON.parse(localStorage.gi_f||'[]');},
+  find(e,p){return this.users().find(u=>u.email===e&&u.password===p);},
+  exists(e){return this.users().some(u=>u.email===e);},
+  addUser(u){const us=this.users();u.id=Date.now();u.joined=new Date().toISOString().split('T')[0];u.lastLogin=new Date().toISOString();us.push(u);localStorage.gi_u=JSON.stringify(us);return u;},
+  logVisit(u){const v=this.vis();v.unshift({id:Date.now(),name:u?u.name:'Anon',email:u?u.email:'—',role:u?u.role:'guest',time:new Date().toISOString()});localStorage.gi_v=JSON.stringify(v.slice(0,100));},
+  touch(e){const us=this.users();const u=us.find(x=>x.email===e);if(u){u.lastLogin=new Date().toISOString();localStorage.gi_u=JSON.stringify(us);}},
+  track(p){const s=this.stats();s[p]=(s[p]||0)+1;localStorage.gi_s=JSON.stringify(s);},
+  addFb(f){const fb=this.fbs();f.id=Date.now();f.time=new Date().toISOString();fb.unshift(f);localStorage.gi_f=JSON.stringify(fb);}
+};
+
+let CU=null, ROLE='user';
+
+function showPage(n){
+  document.querySelectorAll('.page,.auth-page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+n);
+  if(el) el.classList.add('active');
+  DB.track(n);
+  window.scrollTo(0,0);
+}
+
+function showAuth(t){
+  document.querySelectorAll('.page,.auth-page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+t);
+  if(el) el.classList.add('active');
+  DB.track(t);
+}
+
+function route(u){
+  if(u.role==='admin'){loadAdmin();showPage('admin');}
+  else if(u.role==='viewer'){loadViewer();showPage('viewer');}
+  else{loadUser();showPage('user');}
+}
+
+function cls(id,c,add){
+  const e=document.getElementById(id);
+  if(e) add?e.classList.add(c):e.classList.remove(c);
+}
+
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value.trim();
+  const al=document.getElementById('login-alert');
+  al.className='a-alert';
+  let ok=true;
+  if(!email||!email.includes('@')){cls('l-email','err',true);cls('l-ee','show',true);ok=false;}
+  else{cls('l-email','err',false);cls('l-ee','show',false);}
+  if(!pass){cls('l-pass','err',true);cls('l-pe','show',true);ok=false;}
+  else{cls('l-pass','err',false);cls('l-pe','show',false);}
+  if(!ok) return;
+  const u=DB.find(email,pass);
+  if(!u){al.textContent='Invalid email or password.';al.className='a-alert err';return;}
+  CU=u;DB.touch(email);DB.logVisit(u);toast('Welcome, '+u.name+'!');route(u);
+}
+
+function doSignup(){
+  const name=document.getElementById('s-name').value.trim();
+  const email=document.getElementById('s-email').value.trim();
+  const pass=document.getElementById('s-pass').value.trim();
+  const al=document.getElementById('signup-alert');
+  al.className='a-alert';
+  let ok=true;
+  if(!name){cls('s-name','err',true);cls('s-ne','show',true);ok=false;}
+  else{cls('s-name','err',false);cls('s-ne','show',false);}
+  if(!email||!email.includes('@')){cls('s-email','err',true);cls('s-ee','show',true);ok=false;}
+  else{cls('s-email','err',false);cls('s-ee','show',false);}
+  if(pass.length<6){cls('s-pass','err',true);cls('s-pe','show',true);ok=false;}
+  else{cls('s-pass','err',false);cls('s-pe','show',false);}
+  if(!ok) return;
+  if(DB.exists(email)){al.textContent='Email already registered.';al.className='a-alert err';return;}
+  const u=DB.addUser({name,email,password:pass,role:ROLE});
+  CU=u;DB.logVisit(u);toast('Welcome, '+name+'!');route(u);
+}
+
+function doLogout(){CU=null;showPage('home');toast('Logged out');}
+
+function setRole(r){
+  ROLE=r;
+  ['user','viewer','admin'].forEach(x=>{
+    const e=document.getElementById('role-'+x);
+    if(e) e.className='role-opt'+(x===r?' on':'');
+  });
+}
+
+function loadUser(){
+  if(!CU) return;
+  document.getElementById('u-av').textContent=CU.name[0].toUpperCase();
+  document.getElementById('u-nm').textContent=CU.name;
+  document.getElementById('u-name').textContent=CU.name.split(' ')[0];
+  const fn=document.getElementById('fb-name'), fe=document.getElementById('fb-email');
+  if(fn) fn.value=CU.name;
+  if(fe) fe.value=CU.email;
+  document.getElementById('fb-form').style.display='block';
+  document.getElementById('fb-ok').style.display='none';
+  const f=document.getElementById('u-pbi');
+  if(f&&localStorage.gi_e) f.src=localStorage.gi_e;
+}
+
+function sendFb(){
+  const name=document.getElementById('fb-name').value.trim();
+  const email=document.getElementById('fb-email').value.trim();
+  const cat=document.getElementById('fb-cat').value;
+  const msg=document.getElementById('fb-msg').value.trim();
+  const r=document.querySelector('input[name="sr"]:checked');
+  const al=document.getElementById('fb-alert');
+  if(!name||!email||!cat||!msg||!r){
+    al.textContent='Please fill all fields and select a rating.';
+    al.className='sm-alert err';
+    al.style.display='block';
+    return;
+  }
+  al.style.display='none';
+  DB.addFb({name,email,category:cat,message:msg,rating:parseInt(r.value)});
+  document.getElementById('fb-form').style.display='none';
+  document.getElementById('fb-ok').style.display='block';
+  toast('Feedback sent!');
+}
+
+function resetFb(){
+  ['fb-cat','fb-msg'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.querySelectorAll('input[name="sr"]').forEach(r=>r.checked=false);
+  document.getElementById('fb-alert').style.display='none';
+  document.getElementById('fb-form').style.display='block';
+  document.getElementById('fb-ok').style.display='none';
+}
+
+const CL=['#1A3A5C','#0E7490','#10B981','#F59E0B','#F43F5E','#7C3AED','#0891B2'];
+function gc(n){let h=0;for(let c of n)h=(h+c.charCodeAt(0))%CL.length;return CL[h];}
+function ft(iso){
+  if(!iso) return '—';
+  try{
+    const d=new Date(iso),now=new Date(),s=Math.floor((now-d)/1000);
+    if(s<60) return 'Just now';
+    if(s<3600) return Math.floor(s/60)+'m ago';
+    if(s<86400) return Math.floor(s/3600)+'h ago';
+    return d.toLocaleDateString();
+  }catch{return '—';}
+}
+function rb(r){return r==='admin'?'br':r==='viewer'?'bo':'bg';}
+function toast(msg){
+  const t=document.getElementById('toast'),m=document.getElementById('toast-msg');
+  if(!t||!m) return;
+  m.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function loadAdmin(){
+  if(!CU) return;
+  document.getElementById('adm-av').textContent=CU.name[0].toUpperCase();
+  document.getElementById('adm-nm').textContent=CU.name;
+  const v=DB.vis(), u=DB.users(), s=DB.stats();
+  document.getElementById('kpi-vis').textContent=v.length;
+  document.getElementById('kpi-usr').textContent=u.length;
+  document.getElementById('kpi-today').textContent=v.filter(x=>new Date(x.time).toDateString()===new Date().toDateString()).length;
+  document.getElementById('kpi-vc').textContent='Total: '+v.length;
+  document.getElementById('vis-badge').textContent=v.length+' Total';
+  document.getElementById('usr-badge').textContent=u.length+' Users';
+  document.getElementById('s-home').textContent=(s.home||0)+' views';
+  document.getElementById('s-dash').textContent=(s.user||0)+' views';
+  document.getElementById('s-login').textContent=(s.login||0)+' views';
+  document.getElementById('s-signup').textContent=(s.signup||0)+' views';
+  const eu=document.getElementById('embed-url');
+  if(eu) eu.value=localStorage.gi_e||'';
+  document.getElementById('vis-tbody').innerHTML=v.length===0
+    ?'<tr><td colspan="6" style="text-align:center;color:var(--slate);padding:1.5rem">No visitors yet</td></tr>'
+    :v.map((x,i)=>'<tr><td style="color:var(--slate);font-size:.75rem">'+(i+1)+'</td><td><div class="ucell"><div class="avsm" style="background:'+gc(x.name)+'">'+x.name[0]+'</div>'+x.name+'</div></td><td style="color:var(--slate)">'+x.email+'</td><td><span class="bdg '+rb(x.role)+'">'+x.role+'</span></td><td style="color:var(--slate);font-size:.75rem">'+ft(x.time)+'</td><td><span class="bdg bg">Visited</span></td></tr>').join('');
+  document.getElementById('usr-tbody').innerHTML=u.map(x=>'<tr><td><div class="ucell"><div class="avsm" style="background:'+gc(x.name)+'">'+x.name[0]+'</div><div><div style="font-weight:700">'+x.name+'</div></div></div></td><td style="color:var(--slate)">'+x.email+'</td><td><span class="bdg '+rb(x.role)+'">'+x.role+'</span></td><td style="color:var(--slate);font-size:.75rem">'+x.joined+'</td><td style="color:var(--slate);font-size:.75rem">'+ft(x.lastLogin)+'</td><td><span class="bdg bg">Active</span></td></tr>').join('');
+  document.getElementById('act-feed').innerHTML=v.slice(0,6).map(x=>'<div class="act"><div class="act-dot" style="background:'+gc(x.name)+'"></div><span class="act-tx"><strong>'+x.name+'</strong> visited the platform</span><span class="act-tm">'+ft(x.time)+'</span></div>').join('')||'<p style="color:var(--slate);font-size:.8rem">No activity yet</p>';
+}
+
+function swP(n,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('panel-'+n).classList.add('on');
+  btn.classList.add('on');
+  loadAdmin();
+  if(n==='feedback') loadFbAdmin();
+}
+
+function saveEmbed(){
+  const url=document.getElementById('embed-url').value.trim();
+  if(!url){toast('Enter a URL');return;}
+  localStorage.gi_e=url;
+  toast('Saved!');
+}
+
+function loadFbAdmin(){
+  const fb=DB.fbs();
+  document.getElementById('fb-count').textContent=fb.length;
+  document.getElementById('fb-badge').textContent=fb.length+' Entries';
+  if(fb.length){
+    document.getElementById('fb-avg').textContent=(fb.reduce((s,f)=>s+f.rating,0)/fb.length).toFixed(1);
+    const cats={};
+    fb.forEach(f=>cats[f.category]=(cats[f.category]||0)+1);
+    const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('fb-top').textContent=top?top[0]:'—';
+  }
+  document.getElementById('fb-tbody').innerHTML=fb.length===0
+    ?'<tr><td colspan="6" style="text-align:center;color:var(--slate);padding:1.5rem">No feedback yet</td></tr>'
+    :fb.map((f,i)=>'<tr><td style="color:var(--slate);font-size:.75rem">'+(i+1)+'</td><td><div class="ucell"><div class="avsm" style="background:'+gc(f.name)+'">'+f.name[0]+'</div><strong>'+f.name+'</strong></div></td><td><span class="bdg bt">'+f.category+'</span></td><td style="color:var(--amber);letter-spacing:1px;font-size:.8rem">'+'&#9733;'.repeat(f.rating)+'&#9734;'.repeat(5-f.rating)+'</td><td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.76rem;color:var(--slate)">'+f.message+'</td><td style="color:var(--slate);font-size:.75rem">'+ft(f.time)+'</td></tr>').join('');
+}
+
+function loadViewer(){
+  if(!CU) return;
+  document.getElementById('vw-av').textContent=CU.name[0].toUpperCase();
+  document.getElementById('vw-nm').textContent=CU.name;
+  const v=DB.vis(), u=DB.users();
+  document.getElementById('vw-total').textContent=v.length;
+  document.getElementById('vw-users').textContent=u.length;
+  document.getElementById('vw-today').textContent=v.filter(x=>new Date(x.time).toDateString()===new Date().toDateString()).length;
+  document.getElementById('vw-badge').textContent=v.length+' Total';
+  document.getElementById('vw-tbody').innerHTML=v.length===0
+    ?'<tr><td colspan="6" style="text-align:center;color:var(--slate);padding:1.5rem">No visitors yet</td></tr>'
+    :v.map((x,i)=>'<tr><td style="color:var(--slate);font-size:.75rem">'+(i+1)+'</td><td><div class="ucell"><div class="avsm" style="background:'+gc(x.name)+'">'+x.name[0]+'</div>'+x.name+'</div></td><td style="color:var(--slate)">'+x.email+'</td><td><span class="bdg '+rb(x.role)+'">'+x.role+'</span></td><td style="color:var(--slate);font-size:.75rem">'+ft(x.time)+'</td><td><span class="bdg bg">Visited</span></td></tr>').join('');
+}
+
+DB.init();
+showPage('home');
+</script>
+</body>
+</html>
